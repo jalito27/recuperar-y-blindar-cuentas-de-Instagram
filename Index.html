@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>RESCATE IG // PROTOCOLO DE RECUPERACIÓN — #UseTech4Good</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Syne (Display Gigante), Space Grotesk (Editorial), JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Space+Grotesk:wght@400;600;700&family=Syne:wght@800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- html2pdf.js & QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Space Grotesk"', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        ink: '#09090b',
+                        paper: '#f4f4f0',
+                        acid: '#d4ff00',
+                        signal: '#ff2a5f',
+                        cobalt: '#1d4ed8',
+                    },
+                    boxShadow: {
+                        'brutal': '6px 6px 0px 0px #09090b',
+                        'brutal-lg': '10px 10px 0px 0px #09090b',
+                        'brutal-sm': '3px 3px 0px 0px #09090b',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f4f4f0;
+            color: #09090b;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .swiss-grid-bg {
+            background-image: 
+                linear-gradient(to right, rgba(9, 9, 11, 0.06) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(9, 9, 11, 0.06) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        .bento-cell {
+            border: 3px solid #09090b;
+            transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.15s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .bento-cell:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px 0px #09090b;
+        }
+
+        .btn-tactical {
+            border: 3px solid #09090b;
+            box-shadow: 4px 4px 0px 0px #09090b;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            text-transform: uppercase;
+            transition: all 0.1s ease;
+        }
+
+        .btn-tactical:active {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0px 0px #09090b;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: max-content;
+            animation: marquee 24s linear infinite;
+        }
+
+        /* Interactive Scenario Tabs */
+        .scenario-btn.active {
+            background-color: #09090b;
+            color: #d4ff00;
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px #09090b;
+        }
+
+        /* Custom Shield Checkboxes */
+        .shield-check:checked + label {
+            background-color: #09090b;
+            color: #d4ff00;
+        }
+        .shield-check:checked + label .check-box-icon {
+            background-color: #d4ff00;
+            color: #09090b;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: #fff !important; }
+            .bento-cell { box-shadow: none !important; break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="swiss-grid-bg min-h-screen flex flex-col justify-between selection:bg-signal selection:text-white">
+
+    <!-- TOP EDITORIAL BAR -->
+    <nav class="sticky top-0 z-40 bg-paper border-b-4 border-ink px-4 sm:px-8 py-3 no-print">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="bg-ink text-acid font-mono font-extrabold text-xs sm:text-sm px-2.5 py-1 tracking-tighter">
+                    #UseTech4Good
+                </span>
+                <span class="font-mono text-xs font-bold uppercase hidden md:inline tracking-widest">
+                    EMERGENCIA DIGITAL // RESCATE DE CUENTAS IG
+                </span>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button onclick="openQRModal()" class="btn-tactical bg-white hover:bg-acid text-ink px-3 py-2 text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span class="hidden sm:inline">Compartir QR</span>
+                </button>
+                <button onclick="exportRecoveryPDF()" class="btn-tactical bg-acid hover:bg-lime-300 text-ink px-3.5 py-2 text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-down"></i>
+                    <span>PDF Táctico</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- KINETIC WARNING TICKER -->
+    <div class="bg-signal text-white border-b-4 border-ink overflow-hidden py-2 no-print">
+        <div class="animate-marquee font-mono text-xs font-extrabold uppercase tracking-widest flex gap-8">
+            <span>/// INSTAGRAM NUNCA ESCRIBE POR DM</span>
+            <span class="text-acid">/// NO PAGUES A "HACKERS RECUPERADORES"</span>
+            <span>/// USA UN DISPOSITIVO LIMPIO</span>
+            <span class="text-ink bg-acid px-1.5">/// PRIMERO BLINDÁ TU EMAIL</span>
+            <span>/// NO HAGAS RESETS MASIVOS</span>
+            <span>/// INSTAGRAM NUNCA ESCRIBE POR DM</span>
+            <span class="text-acid">/// NO PAGUES A "HACKERS RECUPERADORES"</span>
+            <span>/// USA UN DISPOSITIVO LIMPIO</span>
+            <span class="text-ink bg-acid px-1.5">/// PRIMERO BLINDÁ TU EMAIL</span>
+            <span>/// NO HAGAS RESETS MASIVOS</span>
+        </div>
+    </div>
+
+    <!-- MAIN ASYMMETRIC BENTO CONTAINER -->
+    <main id="recovery-canvas" class="max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+
+        <!-- ROW 1: ASYMMETRIC HERO + GOLDEN RULES -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            
+            <!-- Left Giant Typography Block (8 cols) -->
+            <section class="lg:col-span-8 bento-cell bg-white p-6 sm:p-10 shadow-brutal flex flex-col justify-between">
+                <div class="space-y-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-mono text-xs font-extrabold uppercase bg-signal text-white px-2.5 py-1 border-2 border-ink">
+                            PROTOCOLO DE CONTENCIÓN
+                        </span>
+                        <span class="font-mono text-xs font-bold uppercase border-2 border-ink px-2.5 py-1">
+                            FUENTE: HACKED.COM + META SECURITY
+                        </span>
+                    </div>
+                    
+                    <h1 class="font-display text-5xl sm:text-7xl xl:text-8xl font-black uppercase leading-[0.9] tracking-tighter">
+                        IG <span class="bg-signal text-white px-2 border-3 border-ink inline-block -rotate-1">HACKEADO</span>: TOMÁ EL CONTROL.
+                    </h1>
+                </div>
+
+                <div class="mt-8 pt-6 border-t-3 border-ink flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <p class="text-lg sm:text-2xl font-bold leading-tight max-w-xl">
+                        Sin pánico. Cada clic impulsivo le da ventaja al atacante. Ejecutá la ruta exacta según tu estado actual.
+                    </p>
+                    <div class="font-mono text-xs font-bold uppercase shrink-0 text-right">
+                        <span class="block text-zinc-500">CUENTA AFECTADA:</span>
+                        <input id="victimUserInput" type="text" placeholder="[@tu_usuario]" class="border-b-2 border-ink bg-transparent font-mono font-bold text-ink focus:outline-none focus:bg-acid px-1 py-0.5 w-44 text-right">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Brutal Tri-Rule Block (4 cols) -->
+            <aside class="lg:col-span-4 bento-cell bg-ink text-paper p-6 sm:p-8 shadow-brutal flex flex-col justify-between">
+                <div class="space-y-4">
+                    <div class="font-mono text-xs text-acid font-bold uppercase tracking-widest">
+                        01 // 3 REGLAS DE SUPERVIVENCIA
+                    </div>
+                    <ul class="space-y-4 text-sm sm:text-base">
+                        <li class="border-b border-zinc-800 pb-3">
+                            <span class="font-mono text-acid font-bold block text-xs">REGLA 01 // EQUIPO LIMPIO</span>
+                            Si caíste en un enlace falso, cambiá tus claves desde <strong>otro teléfono o PC</strong>.
+                        </li>
+                        <li class="border-b border-zinc-800 pb-3">
+                            <span class="font-mono text-acid font-bold block text-xs">REGLA 02 // CERO RESETS EN BUCLE</span>
+                            Pedir 10 códigos seguidos bloquea el formulario oficial. Frená y elegí una sola ruta.
+                        </li>
+                        <li>
+                            <span class="font-mono text-signal font-bold block text-xs">REGLA 03 // CERO INTERMEDIARIOS</span>
+                            Nadie en Telegram o IG puede "recuperar" tu cuenta por dinero. Es una segunda estafa.
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+
+        <!-- ROW 2: INTERACTIVE SCENARIO ROUTER (DIAGNÓSTICO EN VIVO) -->
+        <section class="bento-cell bg-white shadow-brutal">
+            <div class="bg-acid border-b-4 border-ink p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <h2 class="font-display text-2xl sm:text-4xl font-black uppercase tracking-tight">
+                    02 // ELEGÍ TU ESCENARIO ACTUAL
+                </h2>
+                <span class="font-mono text-xs font-extrabold uppercase bg-ink text-white px-3 py-1 self-start md:self-auto">
+                    SELECTOR DE RUTA TÁCTICA
+                </span>
+            </div>
+
+            <!-- 4 Interactive Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-b-4 border-ink bg-paper p-3 gap-3 no-print">
+                <button onclick="selectScenario('A', this)" class="scenario-btn active btn-tactical bg-white p-3.5 text-left text-xs leading-snug">
+                    <span class="block text-signal font-black mb-1">[ESCENARIO A]</span>
+                    Aún tengo sesión abierta en un dispositivo
+                </button>
+                <button onclick="selectScenario('B', this)" class="scenario-btn btn-tactical bg-white p-3.5 text-left text-xs leading-snug">
+                    <span class="block text-cobalt font-black mb-1">[ESCENARIO B]</span>
+                    Me llegó mail avisando que cambiaron mi correo
+                </button>
+                <button onclick="selectScenario('C', this)" class="scenario-btn btn-tactical bg-white p-3.5 text-left text-xs leading-snug">
+                    <span class="block text-signal font-black mb-1">[ESCENARIO C]</span>
+                    Me cerraron sesión y no me llegan códigos
+                </button>
+                <button onclick="selectScenario('D', this)" class="scenario-btn btn-tactical bg-white p-3.5 text-left text-xs leading-snug">
+                    <span class="block text-ink font-black mb-1">[ESCENARIO D]</span>
+                    La recuperé pero el atacante vuelve a entrar
+                </button>
+            </div>
+
+            <!-- Dynamic Scenario Content Panels -->
+            <div class="p-6 sm:p-8">
+                
+                <!-- PANEL A -->
+                <div id="panel-A" class="scenario-panel space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-ink pb-3">
+                        <h3 class="font-display text-2xl sm:text-3xl font-black uppercase">
+                            RUTA A: EXPULSÁ AL INTRUSO ANTES DE QUE TE BLOQUEE
+                        </h3>
+                        <span class="font-mono text-xs font-extrabold bg-acid px-2.5 py-1 border-2 border-ink">PRIORIDAD MÁXIMA</span>
+                    </div>
+                    <p class="font-bold text-base sm:text-lg">
+                        Si solo cambiás la contraseña de Instagram, el atacante volverá a entrar por tu correo o por una sesión guardada. Ejecutá este orden exacto:
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs sm:text-sm">
+                        <div class="bg-paper border-2 border-ink p-4 space-y-2">
+                            <span class="bg-ink text-acid px-2 py-0.5 font-bold">PASO 01 // CLAVE ÚNICA</span>
+                            <p>Cambiá la contraseña de IG desde un dispositivo limpio. Si usabas esa misma clave en otros sitios, rotalas todas empezando por tu email.</p>
+                        </div>
+                        <div class="bg-paper border-2 border-ink p-4 space-y-2">
+                            <span class="bg-ink text-acid px-2 py-0.5 font-bold">PASO 02 // BLINDÁ TU EMAIL</span>
+                            <p>Tu correo es el botón de reinicio. Cambiá su clave y revisá <strong>Reglas de reenvío o filtros</strong> (los atacantes desvían los avisos de Meta).</p>
+                        </div>
+                        <div class="bg-paper border-2 border-ink p-4 space-y-2">
+                            <span class="bg-ink text-acid px-2 py-0.5 font-bold">PASO 03 // CORTÁ PUERTAS TRASERAS</span>
+                            <p>Andá a <strong>Centro de Cuentas &gt; Contraseña y seguridad &gt; Dónde iniciaste sesión</strong> y cerrá todo. Desvinculá perfiles ajenos y revocá apps conectadas.</p>
+                        </div>
+                        <div class="bg-paper border-2 border-ink p-4 space-y-2">
+                            <span class="bg-ink text-acid px-2 py-0.5 font-bold">PASO 04 // 2FA CON APP</span>
+                            <p>Activá la verificación en dos pasos usando una <strong>app autenticadora</strong> (Google Authenticator / Authy), nunca solo por SMS.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL B -->
+                <div id="panel-B" class="scenario-panel hidden space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-ink pb-3">
+                        <h3 class="font-display text-2xl sm:text-3xl font-black uppercase">
+                            RUTA B: REVERTIR EL CAMBIO DE CORREO ELECTRÓNICO
+                        </h3>
+                        <span class="font-mono text-xs font-extrabold bg-cobalt text-white px-2.5 py-1 border-2 border-ink">VENTANA CRÍTICA</span>
+                    </div>
+                    <div class="space-y-4 font-mono text-xs sm:text-sm">
+                        <div class="bg-paper border-2 border-ink p-4">
+                            <strong class="block text-sm mb-1">1. BUSCÁ EL REMITENTE OFICIAL:</strong>
+                            Revisá tu bandeja buscando un correo enviado exclusivamente desde <code class="bg-acid px-1.5 py-0.5 border border-ink">security@mail.instagram.com</code>. Verificá que el enlace apunte a <code class="underline">instagram.com</code> antes de tocarlo.
+                        </div>
+                        <div class="bg-paper border-2 border-ink p-4">
+                            <strong class="block text-sm mb-1">2. USÁ EL BOTÓN DE REVERSIÓN:</strong>
+                            Dentro del mensaje oficial, tocá la opción <strong>"Proteger tu cuenta aquí"</strong> o <strong>"Revertir este cambio"</strong>. Esto restaura tu correo y te permite fijar una clave nueva.
+                        </div>
+                        <div class="bg-signal/10 border-2 border-signal p-4">
+                            <strong class="block text-sm text-signal mb-1">¿NO APARECE EL MAIL O EL LINK EXPIRÓ?</strong>
+                            Revisá Spam, Papelera y filtros bloqueados en tu correo. Si el atacante también cambió tu teléfono o el enlace caducó, pasá de inmediato al <strong>[ESCENARIO C]</strong>.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL C -->
+                <div id="panel-C" class="scenario-panel hidden space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-ink pb-3">
+                        <h3 class="font-display text-2xl sm:text-3xl font-black uppercase">
+                            RUTA C: BLOQUEO TOTAL — FLUJO DE SOPORTE META
+                        </h3>
+                        <span class="font-mono text-xs font-extrabold bg-signal text-white px-2.5 py-1 border-2 border-ink">VERIFICACIÓN DE IDENTIDAD</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs sm:text-sm">
+                        <div class="bg-paper border-2 border-ink p-4 space-y-2">
+                            <span class="bg-ink text-white px-2 py-0.5 font-bold">1. ENTRÁ AL FLUJO OFICIAL</span>
+                            <p>Desde un navegador limpio abrí <code class="bg-acid px-1">instagram.com/hacked</code> o tocá <strong>"¿Necesitás más ayuda?"</strong> en la pantalla de inicio. Ingresá tu @usuario actual (pedile a un amigo que mire si lo cambiaron).</p>
+                        </div>
+                        <div class="bg-paper border-2 border-ink p-4 space-y-2">
+                            <span class="bg-ink text-white px-2 py-0.5 font-bold">2. CORREO DE CONTACTO LIMPIO</span>
+                            <p>Cuando Meta te pida un correo de contacto, entregá una <strong>casilla nueva o 100% segura</strong> a la que solo vos entres. Jamás uses un correo comprometido.</p>
+                        </div>
+                        <div class="bg-paper border-2 border-ink p-4 space-y-2">
+                            <span class="bg-ink text-white px-2 py-0.5 font-bold">3. VIDEO-SELFIE O DATOS</span>
+                            <p>Si tenés fotos tuyas en el perfil, Meta pedirá un <strong>video-selfie</strong> girando la cabeza (demora hasta 48 hs hábiles). Si es una marca sin rostros, pedirá el mail/teléfono original de registro.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL D -->
+                <div id="panel-D" class="scenario-panel hidden space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-ink pb-3">
+                        <h3 class="font-display text-2xl sm:text-3xl font-black uppercase">
+                            RUTA D: EL ATACANTE VUELVE A ENTRAR (REINFECCIÓN)
+                        </h3>
+                        <span class="font-mono text-xs font-extrabold bg-ink text-acid px-2.5 py-1 border-2 border-ink">AUDITORÍA DE FUGAS</span>
+                    </div>
+                    <p class="font-bold text-base">
+                        Si cambiás la clave y a los minutos vuelven a tomar la cuenta, dejá de cambiar la contraseña de IG. El agujero está en uno de estos 4 puntos:
+                    </p>
+                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs sm:text-sm">
+                        <li class="border-2 border-ink bg-paper p-3.5">
+                            <strong>01. Malware en tu PC o Teléfono:</strong> Instalaste una app pirata o extensión maliciosa (<em>Infostealer</em>) que lee cada clave nueva que tipeás. Limpiá el equipo primero.
+                        </li>
+                        <li class="border-2 border-ink bg-paper p-3.5">
+                            <strong>02. Centro de Cuentas de Meta:</strong> El atacante vinculó su propio perfil de Facebook a tu IG y entra por esa puerta trasera sin usar tu contraseña.
+                        </li>
+                        <li class="border-2 border-ink bg-paper p-3.5">
+                            <strong>03. Bandeja de correo abierta:</strong> Sigue logueado en tu email o tiene un reenvío silencioso configurado.
+                        </li>
+                        <li class="border-2 border-ink bg-paper p-3.5">
+                            <strong>04. Cuenta suspendida en el ataque:</strong> Si el atacante publicó estafas y Meta inhabilitó la cuenta, guardá todas las capturas para iniciar el formulario de apelación por hackeo.
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ROW 3: ASYMMETRIC SPLIT — BLINDAJE CHECKLIST + CONTENCIÓN DE ESTAFAS -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Interactive Shield Checklist (7 cols) -->
+            <section class="lg:col-span-7 bento-cell bg-acid p-6 sm:p-8 shadow-brutal flex flex-col justify-between space-y-6">
+                <div class="space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="font-mono text-xs font-extrabold uppercase bg-ink text-acid px-2.5 py-1">
+                            03 // PROTOCOLO DE BLINDAJE POST-RESCATE
+                        </span>
+                        <span id="shieldCounter" class="font-mono text-xs font-extrabold uppercase bg-white border-2 border-ink px-2.5 py-1">
+                            0 / 6 PUERTAS CERRADAS
+                        </span>
+                    </div>
+                    <h2 class="font-display text-3xl sm:text-4xl font-black uppercase leading-none pt-2">
+                        CERRÁ TODAS LAS PUERTAS TRASERAS
+                    </h2>
+                    <p class="text-sm font-bold">
+                        Ejecutá este checklist en orden apenas recuperes el acceso:
+                    </p>
+                </div>
+
+                <div class="space-y-2.5">
+                    <div>
+                        <input type="checkbox" id="sh1" class="shield-check hidden" onchange="updateShieldCount()">
+                        <label for="sh1" class="flex items-center gap-3 border-3 border-ink bg-white p-3.5 cursor-pointer font-bold text-xs sm:text-sm transition-colors select-none">
+                            <span class="check-box-icon w-6 h-6 border-2 border-ink flex items-center justify-center font-mono text-xs shrink-0">1</span>
+                            <span>Email blindado: clave nueva, 2FA activo y sin reglas de reenvío ocultas.</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sh2" class="shield-check hidden" onchange="updateShieldCount()">
+                        <label for="sh2" class="flex items-center gap-3 border-3 border-ink bg-white p-3.5 cursor-pointer font-bold text-xs sm:text-sm transition-colors select-none">
+                            <span class="check-box-icon w-6 h-6 border-2 border-ink flex items-center justify-center font-mono text-xs shrink-0">2</span>
+                            <span>Todas las sesiones remotas expulsadas desde Centro de Cuentas.</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sh3" class="shield-check hidden" onchange="updateShieldCount()">
+                        <label for="sh3" class="flex items-center gap-3 border-3 border-ink bg-white p-3.5 cursor-pointer font-bold text-xs sm:text-sm transition-colors select-none">
+                            <span class="check-box-icon w-6 h-6 border-2 border-ink flex items-center justify-center font-mono text-xs shrink-0">3</span>
+                            <span>Cuentas de Facebook/IG ajenas eliminadas del Centro de Cuentas.</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sh4" class="shield-check hidden" onchange="updateShieldCount()">
+                        <label for="sh4" class="flex items-center gap-3 border-3 border-ink bg-white p-3.5 cursor-pointer font-bold text-xs sm:text-sm transition-colors select-none">
+                            <span class="check-box-icon w-6 h-6 border-2 border-ink flex items-center justify-center font-mono text-xs shrink-0">4</span>
+                            <span>Apps de terceros sospechosas revocadas en Aplicaciones y sitios web.</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sh5" class="shield-check hidden" onchange="updateShieldCount()">
+                        <label for="sh5" class="flex items-center gap-3 border-3 border-ink bg-white p-3.5 cursor-pointer font-bold text-xs sm:text-sm transition-colors select-none">
+                            <span class="check-box-icon w-6 h-6 border-2 border-ink flex items-center justify-center font-mono text-xs shrink-0">5</span>
+                            <span>2FA activado con App Autenticadora + 8 códigos de respaldo guardados offline.</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sh6" class="shield-check hidden" onchange="updateShieldCount()">
+                        <label for="sh6" class="flex items-center gap-3 border-3 border-ink bg-white p-3.5 cursor-pointer font-bold text-xs sm:text-sm transition-colors select-none">
+                            <span class="check-box-icon w-6 h-6 border-2 border-ink flex items-center justify-center font-mono text-xs shrink-0">6</span>
+                            <span>Posteos falsos de estafas eliminados y teléfono/correo verificados en el perfil.</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Damage Containment & WhatsApp Alert (5 cols) -->
+            <section class="lg:col-span-5 bento-cell bg-white p-6 sm:p-8 shadow-brutal flex flex-col justify-between space-y-6">
+                <div class="space-y-4">
+                    <span class="font-mono text-xs font-extrabold uppercase bg-signal text-white px-2.5 py-1 border-2 border-ink inline-block">
+                        04 // CONTENCIÓN DE ESTAFAS
+                    </span>
+                    <h2 class="font-display text-2xl sm:text-3xl font-black uppercase leading-none">
+                        FRENÁ EL ENGAÑO A TUS CONTACTOS
+                    </h2>
+                    <p class="text-xs sm:text-sm font-bold text-zinc-700">
+                        Mientras recuperás el acceso, el atacante pedirá dinero o venderá dólares/productos falsos en tu nombre. Publicá este aviso urgente en tus estados de WhatsApp:
+                    </p>
+
+                    <div id="scamAlertText" class="bg-paper border-2 border-ink p-4 font-mono text-xs leading-relaxed text-ink select-all">
+                        "⚠️ AVISO URGENTE: Me hackearon mi cuenta de Instagram. No respondan mensajes directos, no hagan transferencias de dinero ni compren nada que publiquen desde mi perfil hasta que avise por acá que ya la recuperé. Por favor compartan para evitar estafas."
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="copyScamAlert(event)" class="btn-tactical bg-ink text-acid hover:bg-zinc-800 w-full py-3.5 text-xs sm:text-sm flex items-center justify-center gap-2">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Copiar Alerta para WhatsApp</span>
+                    </button>
+                    <p class="font-mono text-[11px] text-zinc-500 leading-tight">
+                        * Tip extra: Pedile a 5 amigos que entren a tu perfil comprometido, toquen los tres puntos y reporten la cuenta por "Suplantación de identidad".
+                    </p>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- QR MODAL -->
+    <div id="qrModal" class="fixed inset-0 bg-ink/85 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white border-4 border-ink shadow-brutal-lg p-6 max-w-sm w-full space-y-5 relative">
+            <button onclick="closeQRModal()" class="absolute top-3 right-3 w-8 h-8 border-2 border-ink font-mono font-black hover:bg-signal hover:text-white flex items-center justify-center">
+                X
+            </button>
+            <div>
+                <span class="font-mono text-[10px] font-extrabold uppercase bg-acid px-2 py-0.5 border border-ink">KIT DE RESPUESTA RÁPIDA</span>
+                <h3 class="font-display text-2xl font-black uppercase mt-1">ESCANEAR GUÍA</h3>
+            </div>
+            <div class="bg-paper border-3 border-ink p-4 flex justify-center items-center min-h-[180px]">
+                <div id="qrcode"></div>
+            </div>
+            <div class="flex gap-2">
+                <input id="shareUrlInput" type="text" readonly class="border-2 border-ink bg-paper px-2.5 py-2 font-mono text-xs w-full truncate">
+                <button onclick="copyUrl(event)" class="btn-tactical bg-acid px-3 py-2 text-xs shrink-0">Copiar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDITORIAL FOOTER -->
+    <footer class="bg-ink text-paper border-t-4 border-ink py-8 px-4 sm:px-8 no-print">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-xs">
+            <div class="space-y-1">
+                <div class="text-acid font-extrabold text-sm tracking-wider uppercase">
+                    #UseTech4Good // HUMAN TECH
+                </div>
+                <p class="text-zinc-400">
+                    Diseño y arquitectura: <span class="text-white font-bold">@Jalito27</span> — Basado en protocolos de Hacked.com &amp; Meta Security.
+                </p>
+            </div>
+            <div class="text-zinc-400 space-y-1 md:text-right">
+                <p>Contenido: <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" class="text-acid underline">CC BY-SA 4.0</a> | Código: <a href="https://opensource.org/licenses/MIT" target="_blank" class="text-acid underline">MIT License</a></p>
+                <p class="text-[11px] text-zinc-500">Nunca entregues tus contraseñas ni códigos 2FA a terceros.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Interactive Scenario Switcher
+        function selectScenario(id, btnElement) {
+            // Update buttons
+            document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Update panels
+            document.querySelectorAll('.scenario-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById('panel-' + id).classList.remove('hidden');
+        }
+
+        // Interactive Shield Checklist Counter
+        function updateShieldCount() {
+            const checks = document.querySelectorAll('.shield-check');
+            let count = 0;
+            checks.forEach(c => { if (c.checked) count++; });
+
+            const counter = document.getElementById('shieldCounter');
+            counter.textContent = `${count} / 6 PUERTAS CERRADAS`;
+
+            if (count === 6) {
+                counter.className = 'font-mono text-xs font-extrabold uppercase bg-ink text-acid border-2 border-ink px-2.5 py-1';
+                counter.textContent = '6 / 6 CUENTA BLINDADA';
+            } else {
+                counter.className = 'font-mono text-xs font-extrabold uppercase bg-white border-2 border-ink px-2.5 py-1';
+            }
+        }
+
+        // Copy Scam Alert to Clipboard
+        function copyScamAlert(event) {
+            const text = document.getElementById('scamAlertText').innerText.replace(/^"|"$/g, '');
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const btn = event.currentTarget;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i><span>¡Alerta Copiada!</span>';
+            btn.classList.remove('bg-ink', 'text-acid');
+            btn.classList.add('bg-acid', 'text-ink');
+
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('bg-acid', 'text-ink');
+                btn.classList.add('bg-ink', 'text-acid');
+            }, 2200);
+        }
+
+        // Export Recovery PDF
+        function exportRecoveryPDF() {
+            // Reveal all 4 scenarios in PDF so the printed manual is complete
+            const panels = document.querySelectorAll('.scenario-panel');
+            panels.forEach(p => p.classList.remove('hidden'));
+
+            const userInput = document.getElementById('victimUserInput');
+            userInput.setAttribute('value', userInput.value);
+            const safeUser = userInput.value.trim() ? userInput.value.trim().replace(/[^a-zA-Z0-9_-]/g, '_') : 'Cuenta';
+
+            const element = document.getElementById('recovery-canvas');
+            const opt = {
+                margin: [0.25, 0.25, 0.25, 0.25],
+                filename: `Rescate_Instagram_${safeUser}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restore active scenario tab view after PDF export
+                const activeBtn = document.querySelector('.scenario-btn.active');
+                if (activeBtn) activeBtn.click();
+            });
+        }
+
+        // QR Modal Controls
+        function openQRModal() {
+            const modal = document.getElementById('qrModal');
+            const url = window.location.href;
+            document.getElementById('shareUrlInput').value = url;
+            modal.classList.remove('hidden');
+
+            const container = document.getElementById('qrcode');
+            container.innerHTML = '';
+            new QRCode(container, {
+                text: url,
+                width: 160,
+                height: 160,
+                colorDark: '#09090b',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        function closeQRModal() {
+            document.getElementById('qrModal').classList.add('hidden');
+        }
+
+        function copyUrl(event) {
+            const input = document.getElementById('shareUrlInput');
+            input.select();
+            document.execCommand('copy');
+            const btn = event.currentTarget;
+            btn.textContent = '¡Listo!';
+            setTimeout(() => { btn.textContent = 'Copiar'; }, 1800);
+        }
+
+        window.onclick = function(e) {
+            if (e.target === document.getElementById('qrModal')) closeQRModal();
+        };
+    </script>
+</body>
+</html>
