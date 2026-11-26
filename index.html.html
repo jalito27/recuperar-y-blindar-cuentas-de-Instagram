@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RESCATE IG // Protocolo de Recuperación — #UseTech4Good</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          },
+          colors: {
+            brutal: {
+              bg: '#F4F3EE',
+              ink: '#0D0D0D',
+              acid: '#D9FF00',
+              alert: '#FF2A5F',
+              cyan: '#00E5FF',
+            }
+          },
+          boxShadow: {
+            'brutal': '6px 6px 0px 0px #0D0D0D',
+            'brutal-sm': '4px 4px 0px 0px #0D0D0D',
+            'brutal-lg': '10px 10px 0px 0px #0D0D0D',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #F4F3EE;
+      background-image: 
+        linear-gradient(to right, rgba(13, 13, 13, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(13, 13, 13, 0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: #0D0D0D;
+      overflow-x: hidden;
+    }
+
+    /* Tipografía fluida calibrada para Syne (fuente ultra-ancha) */
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+      font-size: clamp(2.1rem, 4.6vw, 4.25rem);
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+
+    .hero-badge-word {
+      display: inline-block;
+      background-color: #FF2A5F;
+      color: #FFFFFF;
+      border: 3px solid #0D0D0D;
+      box-shadow: 5px 5px 0px 0px #0D0D0D;
+      padding: 0.12em 0.32em;
+      margin: 0.15em 0;
+      transform: rotate(-1.2deg);
+      max-width: 100%;
+      font-size: clamp(1.9rem, 4.3vw, 4rem);
+      line-height: 1.05;
+    }
+
+    @media (max-width: 640px) {
+      .hero-title {
+        font-size: clamp(1.85rem, 8.5vw, 2.6rem);
+      }
+      .hero-badge-word {
+        font-size: clamp(1.75rem, 8vw, 2.4rem);
+        padding: 0.1em 0.25em;
+      }
+    }
+
+    .scenario-tab.active {
+      background-color: #0D0D0D;
+      color: #D9FF00;
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px 0px #FF2A5F;
+    }
+
+    .check-row input:checked + .check-box {
+      background-color: #D9FF00;
+    }
+    .check-row input:checked + .check-box svg {
+      opacity: 1;
+    }
+    .check-row input:checked ~ .check-text {
+      text-decoration: line-through;
+      opacity: 0.65;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #FFFFFF !important; }
+      .shadow-brutal, .shadow-brutal-sm, .shadow-brutal-lg { box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-brutal-acid selection:text-brutal-ink">
+
+  <!-- BARRA SUPERIOR FIJA -->
+  <header class="no-print sticky top-0 z-40 bg-brutal-bg/95 backdrop-blur-sm border-b-4 border-brutal-ink">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="bg-brutal-ink text-brutal-acid font-mono font-bold text-xs sm:text-sm px-2.5 py-1 border-2 border-brutal-ink shrink-0">
+          #UseTech4Good
+        </span>
+        <span class="font-mono text-xs sm:text-sm tracking-tight uppercase truncate hidden sm:inline">
+          EMERGENCIA DIGITAL // RESCATE DE CUENTAS IG
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3 ml-auto">
+        <button onclick="openQRModal()" class="bg-white hover:bg-brutal-cyan text-brutal-ink font-mono font-bold text-xs px-3 py-2 border-2 border-brutal-ink shadow-brutal-sm active:translate-x-0.5 active:translate-y-0.5 transition flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="square" d="M3 3h6v6H3V3zm12 0h6v6h-6V3zM3 15h6v6H3v-6zm12 0h2v2h-2v-2zm4 0h2v6h-6v-2h4v-4zm-4 4h2v2h-2v-2z"/>
+          </svg>
+          <span>COMPARTIR QR</span>
+        </button>
+
+        <button onclick="exportPDF()" id="btn-pdf" class="bg-brutal-acid hover:bg-yellow-300 text-brutal-ink font-mono font-bold text-xs px-3 py-2 border-2 border-brutal-ink shadow-brutal-sm active:translate-x-0.5 active:translate-y-0.5 transition flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="square" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/>
+          </svg>
+          <span>PDF TÁCTICO</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL EXPORTABLE -->
+  <main id="pdf-content" class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-16 space-y-8">
+
+    <!-- BLOQUE 1: BENTO ASIMÉTRICO HERO + REGLAS DE ORO -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      
+      <!-- Columna Izquierda (7 cols): Titular Principal -->
+      <div class="lg:col-span-7 bg-white border-4 border-brutal-ink shadow-brutal p-5 sm:p-8 flex flex-col justify-between overflow-hidden">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-5">
+            <span class="bg-brutal-alert text-white font-mono font-bold text-[11px] sm:text-xs px-2.5 py-1 border-2 border-brutal-ink uppercase">
+              PROTOCOLO DE CONTENCIÓN
+            </span>
+            <span class="bg-white text-brutal-ink font-mono font-bold text-[11px] sm:text-xs px-2.5 py-1 border-2 border-brutal-ink uppercase">
+              FUENTE: HACKED.COM + META SECURITY
+            </span>
+          </div>
+
+          <h1 class="hero-title uppercase text-brutal-ink">
+            <span class="block">IG</span>
+            <span class="hero-badge-word">HACKEADO</span>
+            <span class="block mt-1">: TOMÁ</span>
+            <span class="block">EL</span>
+            <span class="block">CONTROL</span>
+          </h1>
+        </div>
+
+        <div class="mt-6 pt-5 border-t-4 border-brutal-ink flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <p class="font-sans text-sm sm:text-base font-medium leading-snug max-w-md">
+            El atacante gana cuando entrás en pánico y repetís pedidos de código. Frená, elegí tu rama exacta y cerrá las puertas traseras.
+          </p>
+          <span class="font-mono text-xs font-bold bg-brutal-acid px-3 py-1.5 border-2 border-brutal-ink self-start sm:self-end shrink-0">
+            TIEMPO CRÍTICO: 15 MIN
+          </span>
+        </div>
+      </div>
+
+      <!-- Columna Derecha (5 cols): 3 Reglas de Supervivencia -->
+      <div class="lg:col-span-5 bg-brutal-ink text-white border-4 border-brutal-ink shadow-brutal p-5 sm:p-7 flex flex-col justify-between space-y-5 overflow-hidden">
+        <div class="border-b-2 border-neutral-700 pb-3 flex items-center justify-between">
+          <span class="font-mono text-xs text-brutal-acid font-bold tracking-wider uppercase">
+            ANTES DE TOCAR NADA
+          </span>
+          <span class="font-mono text-xs text-neutral-400">[03 REGLAS]</span>
+        </div>
+
+        <div class="space-y-5">
+          <div>
+            <p class="font-mono text-xs font-bold text-brutal-acid uppercase mb-1">
+              REGLA 01 // EQUIPO LIMPIO
+            </p>
+            <p class="text-sm sm:text-base text-neutral-100 leading-snug">
+              Si caíste en un enlace falso o app dudosa, cambiá tus claves desde <strong>otro teléfono o PC</strong>.
+            </p>
+          </div>
+
+          <div class="border-t border-neutral-800 pt-4">
+            <p class="font-mono text-xs font-bold text-brutal-acid uppercase mb-1">
+              REGLA 02 // CERO RESETS EN BUCLE
+            </p>
+            <p class="text-sm sm:text-base text-neutral-100 leading-snug">
+              Pedir 10 códigos seguidos bloquea el flujo oficial. Frená y elegí una sola ruta limpia.
+            </p>
+          </div>
+
+          <div class="border-t border-neutral-800 pt-4">
+            <p class="font-mono text-xs font-bold text-brutal-alert uppercase mb-1">
+              REGLA 03 // CERO INTERMEDIARIOS
+            </p>
+            <p class="text-sm sm:text-base text-neutral-100 leading-snug">
+              Nadie en Telegram o IG puede “recuperar” tu cuenta por dinero. Instagram nunca escribe por MD.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-neutral-900 border-2 border-brutal-acid p-3 font-mono text-xs text-brutal-acid">
+          &gt; PRIORIDAD #1: TU CORREO ES EL BOTÓN DE REINICIO. ASEGURALO PRIMERO.
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOQUE 2: ENRUTADOR INTERACTIVO DE ESCENARIOS -->
+    <section class="bg-white border-4 border-brutal-ink shadow-brutal p-5 sm:p-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-4 border-brutal-ink pb-4 mb-6">
+        <div>
+          <span class="font-mono text-xs font-bold uppercase bg-brutal-cyan px-2 py-0.5 border-2 border-brutal-ink">
+            DIAGNÓSTICO EN VIVO
+          </span>
+          <h2 class="font-display font-extrabold text-2xl sm:text-4xl uppercase mt-2 tracking-tight">
+            1. ELEGÍ TU ESCENARIO ACTUAL
+          </h2>
+        </div>
+        <p class="font-mono text-xs text-neutral-600">
+          TOCÁ LA OPCIÓN QUE COINCIDE CON TU SITUACIÓN
+        </p>
+      </div>
+
+      <!-- Botones de Escenario -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6 no-print">
+        <button onclick="selectScenario(0)" id="tab-0" class="scenario-tab active text-left p-4 border-3 border-brutal-ink bg-brutal-bg font-mono text-xs sm:text-sm font-bold transition cursor-pointer">
+          <span class="block text-[11px] opacity-75 mb-1">[RAMA A]</span>
+          AÚN TENGO SESIÓN ABIERTA EN UN EQUIPO
+        </button>
+
+        <button onclick="selectScenario(1)" id="tab-1" class="scenario-tab text-left p-4 border-3 border-brutal-ink bg-brutal-bg font-mono text-xs sm:text-sm font-bold transition cursor-pointer">
+          <span class="block text-[11px] opacity-75 mb-1">[RAMA B]</span>
+          ME LLEGÓ AVISO DE CAMBIO DE CORREO
+        </button>
+
+        <button onclick="selectScenario(2)" id="tab-2" class="scenario-tab text-left p-4 border-3 border-brutal-ink bg-brutal-bg font-mono text-xs sm:text-sm font-bold transition cursor-pointer">
+          <span class="block text-[11px] opacity-75 mb-1">[RAMA C]</span>
+          ESTOY AFUERA Y NO ME LLEGAN CÓDIGOS
+        </button>
+
+        <button onclick="selectScenario(3)" id="tab-3" class="scenario-tab text-left p-4 border-3 border-brutal-ink bg-brutal-bg font-mono text-xs sm:text-sm font-bold transition cursor-pointer">
+          <span class="block text-[11px] opacity-75 mb-1">[RAMA D]</span>
+          LA RECUPERÉ PERO VOLVIERON A ENTRAR
+        </button>
+      </div>
+
+      <!-- Panel Dinámico de Acciones -->
+      <div id="scenario-panel" class="bg-brutal-bg border-4 border-brutal-ink p-5 sm:p-7">
+        <!-- Se rellena por JS -->
+      </div>
+    </section>
+
+    <!-- BLOQUE 3: CONTENCIÓN DE DAÑOS + DETECTOR DE FALSOS -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Alerta Copiable para Contactos (7 cols) -->
+      <div class="lg:col-span-7 bg-brutal-alert text-white border-4 border-brutal-ink shadow-brutal p-5 sm:p-7 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="bg-brutal-ink text-white font-mono text-xs font-bold px-2.5 py-1 uppercase">
+              FRENO DE ESTAFAS EN VIVO
+            </span>
+            <span class="font-mono text-xs font-bold">WHATSAPP / GRUPOS</span>
+          </div>
+          <h3 class="font-display font-extrabold text-2xl sm:text-3xl uppercase leading-tight mb-3">
+            AVISÁ A TUS CONTACTOS ANTES DE QUE PIDAN PLATA
+          </h3>
+          <p class="text-sm sm:text-base text-white/95 mb-4">
+            Mientras tramitás el rescate, el atacante suele ofrecer dólares, rifas o pedir transferencias urgentes. Copiá y pegá este aviso ya mismo:
+          </p>
+
+          <div id="warning-msg" class="bg-brutal-ink text-brutal-acid font-mono text-xs sm:text-sm p-4 border-2 border-white select-all leading-relaxed">
+            ⚠️ ALERTA DE SEGURIDAD: Me hackearon mi cuenta de Instagram (@tu_usuario). NO respondan mensajes directos, NO transfieran dinero ni entren a enlaces que envíen desde ese perfil. Ya estoy tramitando la recuperación oficial. Por favor, reporten la cuenta como suplantación/hackeo.
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-3 no-print">
+          <button onclick="copyWarning()" id="copy-btn" class="bg-brutal-acid hover:bg-yellow-300 text-brutal-ink font-mono font-bold text-xs sm:text-sm px-4 py-2.5 border-2 border-brutal-ink shadow-brutal-sm active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer">
+            COPIAR ALERTA AL PORTAPAPELES
+          </button>
+          <span id="copy-status" class="font-mono text-xs font-bold uppercase hidden">
+            ✓ ¡MENSAJE COPIADO!
+          </span>
+        </div>
+      </div>
+
+      <!-- Verificador de Mensajes Oficiales (5 cols) -->
+      <div class="lg:col-span-5 bg-white border-4 border-brutal-ink shadow-brutal p-5 sm:p-7 flex flex-col justify-between">
+        <div>
+          <span class="bg-brutal-ink text-brutal-cyan font-mono text-xs font-bold px-2.5 py-1 uppercase">
+            FILTRO ANTI-PHISHING
+          </span>
+          <h3 class="font-display font-extrabold text-2xl uppercase mt-3 mb-4 leading-tight">
+            ¿ESE CORREO ES REAL O TRAMPA?
+          </h3>
+
+          <ul class="space-y-3 text-sm">
+            <li class="p-3 bg-brutal-bg border-2 border-brutal-ink">
+              <strong class="font-mono text-xs block uppercase text-brutal-ink">1. REMITENTES OFICIALES:</strong>
+              Solo provienen de <code class="bg-brutal-acid px-1 font-bold">@mail.instagram.com</code> o <code class="bg-brutal-acid px-1 font-bold">security@mail.instagram.com</code>.
+            </li>
+            <li class="p-3 bg-brutal-bg border-2 border-brutal-ink">
+              <strong class="font-mono text-xs block uppercase text-brutal-ink">2. PRUEBA INFALIBLE EN LA APP:</strong>
+              Entrá a <em>Centro de cuentas &gt; Contraseña y seguridad &gt; Correos electrónicos recientes</em> (muestra los envíos reales de los últimos 14 días).
+            </li>
+            <li class="p-3 bg-brutal-bg border-2 border-brutal-ink">
+              <strong class="font-mono text-xs block uppercase text-brutal-alert">3. SEÑAL DE ESTAFA:</strong>
+              Si te piden tu contraseña, códigos SMS de 6 dígitos o dinero para “acelerar el soporte”, es fraude.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOQUE 4: CHECKLIST INTERACTIVO DE BLINDAJE (6 PASOS) -->
+    <section class="bg-white border-4 border-brutal-ink shadow-brutal p-5 sm:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-4 border-brutal-ink pb-4 mb-6">
+        <div>
+          <span class="bg-brutal-acid font-mono text-xs font-bold px-2.5 py-1 border-2 border-brutal-ink uppercase">
+            CIERRE DE PUERTAS TRASERAS
+          </span>
+          <h2 class="font-display font-extrabold text-2xl sm:text-4xl uppercase mt-2 tracking-tight">
+            2. CHECKLIST DE BLINDAJE DEFINITIVO
+          </h2>
+        </div>
+
+        <div class="bg-brutal-ink text-white px-4 py-2 border-2 border-brutal-ink font-mono text-xs sm:text-sm font-bold shrink-0">
+          PROGRESO: <span id="progress-count" class="text-brutal-acid">0/6</span> COMPLETADOS
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="checklist-container">
+        <!-- Item 1 -->
+        <label class="check-row flex items-start gap-3 p-4 bg-brutal-bg border-2 border-brutal-ink cursor-pointer hover:bg-yellow-50 transition">
+          <input type="checkbox" onchange="updateProgress()" class="sr-only" />
+          <span class="check-box w-6 h-6 border-2 border-brutal-ink bg-white flex items-center justify-center shrink-0 mt-0.5">
+            <svg class="w-4 h-4 opacity-0 transition" fill="none" stroke="#0D0D0D" stroke-width="3.5" viewBox="0 0 24 24"><path stroke-linecap="square" d="M5 13l4 4L19 7"/></svg>
+          </span>
+          <span class="check-text text-sm leading-snug">
+            <strong class="font-mono text-xs block uppercase">[01] CORREO BLINDADO:</strong>
+            Cambié clave del mail, activé 2FA y revisé que no haya reglas de reenvío ocultas.
+          </span>
+        </label>
+
+        <!-- Item 2 -->
+        <label class="check-row flex items-start gap-3 p-4 bg-brutal-bg border-2 border-brutal-ink cursor-pointer hover:bg-yellow-50 transition">
+          <input type="checkbox" onchange="updateProgress()" class="sr-only" />
+          <span class="check-box w-6 h-6 border-2 border-brutal-ink bg-white flex items-center justify-center shrink-0 mt-0.5">
+            <svg class="w-4 h-4 opacity-0 transition" fill="none" stroke="#0D0D0D" stroke-width="3.5" viewBox="0 0 24 24"><path stroke-linecap="square" d="M5 13l4 4L19 7"/></svg>
+          </span>
+          <span class="check-text text-sm leading-snug">
+            <strong class="font-mono text-xs block uppercase">[02] CLAVE ÚNICA EN IG:</strong>
+            Creé una contraseña nueva que jamás usé en otro sitio ni red social.
+          </span>
+        </label>
+
+        <!-- Item 3 -->
+        <label class="check-row flex items-start gap-3 p-4 bg-brutal-bg border-2 border-brutal-ink cursor-pointer hover:bg-yellow-50 transition">
+          <input type="checkbox" onchange="updateProgress()" class="sr-only" />
+          <span class="check-box w-6 h-6 border-2 border-brutal-ink bg-white flex items-center justify-center shrink-0 mt-0.5">
+            <svg class="w-4 h-4 opacity-0 transition" fill="none" stroke="#0D0D0D" stroke-width="3.5" viewBox="0 0 24 24"><path stroke-linecap="square" d="M5 13l4 4L19 7"/></svg>
+          </span>
+          <span class="check-text text-sm leading-snug">
+            <strong class="font-mono text-xs block uppercase">[03] EXPULSIÓN DE SESIONES:</strong>
+            Cerré sesión en todos los dispositivos desconocidos desde <em>Dónde iniciaste sesión</em>.
+          </span>
+        </label>
+
+        <!-- Item 4 -->
+        <label class="check-row flex items-start gap-3 p-4 bg-brutal-bg border-2 border-brutal-ink cursor-pointer hover:bg-yellow-50 transition">
+          <input type="checkbox" onchange="updateProgress()" class="sr-only" />
+          <span class="check-box w-6 h-6 border-2 border-brutal-ink bg-white flex items-center justify-center shrink-0 mt-0.5">
+            <svg class="w-4 h-4 opacity-0 transition" fill="none" stroke="#0D0D0D" stroke-width="3.5" viewBox="0 0 24 24"><path stroke-linecap="square" d="M5 13l4 4L19 7"/></svg>
+          </span>
+          <span class="check-text text-sm leading-snug">
+            <strong class="font-mono text-xs block uppercase">[04] CENTRO DE CUENTAS LIMPIO:</strong>
+            Eliminé perfiles de Facebook o Meta desconocidos que el atacante haya vinculado.
+          </span>
+        </label>
+
+        <!-- Item 5 -->
+        <label class="check-row flex items-start gap-3 p-4 bg-brutal-bg border-2 border-brutal-ink cursor-pointer hover:bg-yellow-50 transition">
+          <input type="checkbox" onchange="updateProgress()" class="sr-only" />
+          <span class="check-box w-6 h-6 border-2 border-brutal-ink bg-white flex items-center justify-center shrink-0 mt-0.5">
+            <svg class="w-4 h-4 opacity-0 transition" fill="none" stroke="#0D0D0D" stroke-width="3.5" viewBox="0 0 24 24"><path stroke-linecap="square" d="M5 13l4 4L19 7"/></svg>
+          </span>
+          <span class="check-text text-sm leading-snug">
+            <strong class="font-mono text-xs block uppercase">[05] APPS CONECTADAS REVOCADAS:</strong>
+            Quité permisos a aplicaciones y sitios de terceros en <em>Apps y sitios web</em>.
+          </span>
+        </label>
+
+        <!-- Item 6 -->
+        <label class="check-row flex items-start gap-3 p-4 bg-brutal-bg border-2 border-brutal-ink cursor-pointer hover:bg-yellow-50 transition">
+          <input type="checkbox" onchange="updateProgress()" class="sr-only" />
+          <span class="check-box w-6 h-6 border-2 border-brutal-ink bg-white flex items-center justify-center shrink-0 mt-0.5">
+            <svg class="w-4 h-4 opacity-0 transition" fill="none" stroke="#0D0D0D" stroke-width="3.5" viewBox="0 0 24 24"><path stroke-linecap="square" d="M5 13l4 4L19 7"/></svg>
+          </span>
+          <span class="check-text text-sm leading-snug">
+            <strong class="font-mono text-xs block uppercase">[06] 2FA CON APP AUTENTICADORA:</strong>
+            Activé Google Authenticator / Authy (más seguro que SMS) y guardé los códigos de respaldo offline.
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <!-- PIE DE PÁGINA CON LICENCIA ABIERTA -->
+    <footer class="border-t-4 border-brutal-ink pt-6 text-center space-y-2">
+      <p class="font-mono text-xs font-bold uppercase">
+        #UseTech4Good // #HumanTech — Creado por Javier Lombardi (@Jalito27)
+      </p>
+      <p class="text-xs text-neutral-700 max-w-2xl mx-auto">
+        Contenido bajo licencia 
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" class="underline font-bold">Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)</a> 
+        y código fuente bajo <a href="https://opensource.org/licenses/MIT" target="_blank" class="underline font-bold">Licencia MIT</a>. Uso, copia y adaptación libre citando la fuente.
+      </p>
+    </footer>
+
+  </main>
+
+  <!-- MODAL CÓDIGO QR -->
+  <div id="qr-modal" class="no-print fixed inset-0 z-50 bg-brutal-ink/80 hidden items-center justify-center p-4">
+    <div class="bg-white border-4 border-brutal-ink shadow-brutal-lg max-w-sm w-full p-6 text-center space-y-4">
+      <div class="flex items-center justify-between border-b-2 border-brutal-ink pb-2">
+        <span class="font-mono text-xs font-bold uppercase">COMPARTIR PROTOCOLO</span>
+        <button onclick="closeQRModal()" class="font-mono font-bold text-sm px-2 py-0.5 bg-brutal-alert text-white border-2 border-brutal-ink cursor-pointer">X</button>
+      </div>
+      <p class="text-xs font-mono text-neutral-700">Escaneá desde un dispositivo limpio para abrir esta guía:</p>
+      <div id="qrcode" class="flex justify-center p-3 bg-white border-2 border-brutal-ink mx-auto w-fit"></div>
+      <p id="qr-url-label" class="font-mono text-[11px] break-all bg-brutal-bg p-2 border border-brutal-ink"></p>
+    </div>
+  </div>
+
+  <script>
+    const scenarios = [
+      {
+        code: "RAMA A // SESIÓN TODAVÍA ACTIVA",
+        title: "ESTABILIZÁ EL ACCESO ANTES DE QUE TE EXPULSEN",
+        urgency: "ACCIÓN INMEDIATA (0–5 MIN)",
+        steps: [
+          "Entrá ya a Configuración > Centro de cuentas > Contraseña y seguridad > Cambiar contraseña (desde un equipo confiable).",
+          "Sin salir de ahí, entrá a 'Dónde iniciaste sesión' y cerrá TODAS las sesiones que no reconozcas.",
+          "Revisá 'Cuentas vinculadas' en el Centro de cuentas y eliminá cualquier perfil de Facebook/Meta agregado por el intruso.",
+          "Verificá en 'Datos personales' que tu correo y teléfono sigan siendo los tuyos antes de activar la verificación en dos pasos."
+        ]
+      },
+      {
+        code: "RAMA B // CAMBIO DE CORREO ELECTRÓNICO",
+        title: "USÁ EL BOTÓN DE REVERSIÓN OFICIAL EN TU BANDEJA",
+        urgency: "VENTANA DE TIEMPO LIMITADA",
+        steps: [
+          "Abrí tu correo electrónico y buscá un mensaje reciente de 'security@mail.instagram.com' con el asunto de cambio de correo.",
+          "Verificá que el remitente sea legítimo y tocá el enlace oficial 'Revertir este cambio' (Secure my account / Revert this change).",
+          "Si el enlace funciona, restablecerá tu correo original al instante y te pedirá crear una clave nueva.",
+          "Si el enlace expiró o el atacante cambió también tu contraseña y teléfono, pasá directamente a la RAMA C."
+        ]
+      },
+      {
+        code: "RAMA C // BLOQUEO TOTAL SIN CÓDIGOS",
+        title: "ACTIVÁ EL FLUJO DE SOPORTE Y SELFIE EN VIDEO",
+        urgency: "VERIFICACIÓN DE IDENTIDAD META",
+        steps: [
+          "En la pantalla de inicio de sesión de Instagram (en la app móvil), tocá '¿Olvidaste tu contraseña?' / 'Obtén ayuda para iniciar sesión'.",
+          "Ingresá tu nombre de usuario y tocá '¿Necesitás más ayuda?' o 'Probar otro método' cuando veas que los códigos van al correo/teléfono del atacante.",
+          "Seleccioná 'Me hackearon la cuenta' e ingresá un correo electrónico nuevo y seguro al que solo vos tengas acceso.",
+          "Si tenés fotos tuyas en el perfil, Meta te pedirá grabar una selfie en video girando la cabeza. Si es una cuenta de marca/colegio sin rostros, te pedirá el correo/teléfono original y el modelo de dispositivo con el que creaste la cuenta."
+        ]
+      },
+      {
+        code: "RAMA D // REINCIDENCIA DE INTRUSIÓN",
+        title: "EL ATACANTE CONSERVA UNA PUERTA TRASERA",
+        urgency: "AUDITORÍA DE BRECHA PERSISTENTE",
+        steps: [
+          "Dejá de cambiar solo la clave de Instagram: el intruso tiene acceso a tu correo, a tu navegador o a una cuenta vinculada.",
+          "Revisá tu casilla de Gmail/Outlook desde otro equipo: cerrá sesiones abiertas y revisá 'Filtros y direcciones bloqueadas' o 'Reenvío POP/IMAP' (suelen dejar reglas ocultas).",
+          "Si instalaste programas piratas, extensiones raras o caíste en un formulario falso en tu PC/celular, analizá el dispositivo en busca de malware (infostealers) antes de volver a iniciar sesión.",
+          "Una vez limpio, repetí los 6 pasos del Checklist de Blindaje."
+        ]
+      }
+    ];
+
+    function selectScenario(index) {
+      document.querySelectorAll('.scenario-tab').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+      });
+
+      const s = scenarios[index];
+      const panel = document.getElementById('scenario-panel');
+      panel.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <span class="font-mono text-xs font-bold bg-brutal-ink text-brutal-acid px-2.5 py-1">${s.code}</span>
+          <span class="font-mono text-xs font-bold text-brutal-alert uppercase">${s.urgency}</span>
+        </div>
+        <h3 class="font-display font-extrabold text-xl sm:text-2xl uppercase mb-4">${s.title}</h3>
+        <ol class="space-y-3">
+          ${s.steps.map((step, idx) => `
+            <li class="flex items-start gap-3 bg-white p-3.5 border-2 border-brutal-ink">
+              <span class="font-mono font-bold text-xs bg-brutal-acid px-2 py-1 border border-brutal-ink shrink-0">0${idx + 1}</span>
+              <span class="text-sm sm:text-base leading-snug">${step}</span>
+            </li>
+          `).join('')}
+        </ol>
+      `;
+    }
+
+    function copyWarning() {
+      const text = document.getElementById('warning-msg').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const status = document.getElementById('copy-status');
+        status.classList.remove('hidden');
+        setTimeout(() => status.classList.add('hidden'), 3000);
+      });
+    }
+
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
+      const checked = Array.from(checkboxes).filter(c => c.checked).length;
+      document.getElementById('progress-count').innerText = `${checked}/${checkboxes.length}`;
+    }
+
+    let qrGenerated = false;
+    function openQRModal() {
+      const modal = document.getElementById('qr-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      const currentUrl = window.location.href;
+      document.getElementById('qr-url-label').innerText = currentUrl;
+
+      if (!qrGenerated) {
+        new QRCode(document.getElementById('qrcode'), {
+          text: currentUrl,
+          width: 180,
+          height: 180,
+          colorDark: "#0D0D0D",
+          colorLight: "#FFFFFF",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+        qrGenerated = true;
+      }
+    }
+
+    function closeQRModal() {
+      const modal = document.getElementById('qr-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function exportPDF() {
+      const element = document.getElementById('pdf-content');
+      const btn = document.getElementById('btn-pdf');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span>GENERANDO...</span>';
+
+      // Sincroniza checkboxes antes de renderizar
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        if (cb.checked) cb.setAttribute('checked', 'checked');
+        else cb.removeAttribute('checked');
+      });
+
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: 'Protocolo_Rescate_IG_UseTech4Good.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        btn.innerHTML = originalText;
+      });
+    }
+
+    // Inicializar en Rama A
+    selectScenario(0);
+  </script>
+</body>
+</html>
